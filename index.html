@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>视频帧截取</title>
+</head>
+<body>
+<!--
+    <input type="file" id="upload-ipt" @change="chooseVideo" accept="video/*" />
+    <div id="box" style="display:none"></div>
+-->
+    <input type="file" id="upload-ipt" onchange="chooseVideo()" accept="video/*" />
+    <p id="handle-wrap"></p>
+    <div>
+        <h3>原视频</h3>
+        <div id="in-box" style="display:none"></div>
+    </div>
+    <div>
+        <h3>视频截图</h3>
+        <div id="img-wrap"></div>
+    </div>
+    <script>
+        function chooseVideo(){
+            var oHandle = document.getElementById('handle-wrap');
+            oHandle.innerHTML = "<button onclick='showVideo()'>显示视频</button>";
+
+        	console.log('选择文件');
+	        var obj_file = document.getElementById("upload-ipt");
+	        var file = obj_file.files[0];
+	        var blob = new Blob([file]), // 文件转化成二进制文件
+		        url = URL.createObjectURL(blob); //转化成url
+	        console.log(blob, url);
+	        var oVideo = document.createElement('video');
+	        oVideo.setAttribute('src', url);
+	        oVideo.setAttribute('controls', 'controls');
+	        oVideo.currentTime = 1;  // 设置当前视频为 第1s
+
+            var oInBox = document.getElementById('in-box');
+            oInBox.appendChild(oVideo);
+            console.dir(oVideo);
+/*
+            oVideo.addEventListener('canplay', function (event){
+            	var oCanvas = document.createElement('canvas');
+            	setTimeout( ()=>{
+		            oCanvas.width = oVideo.videoWidth;
+		            oCanvas.height = oVideo.videoHeight;
+		            oCanvas.getContext("2d").drawImage(oVideo, 0, 0, oCanvas.width, oCanvas.height * 2);
+		            console.log(oCanvas.toDataURL("image/png")); //第一帧图片url
+	            }, 1000 )
+            });
+*/
+            oVideo.addEventListener('canplay', function (event){
+            	var oCanvas = document.createElement('canvas');
+	            oCanvas.width = oVideo.videoWidth;
+	            oCanvas.height = oVideo.videoHeight;
+	            oCanvas.getContext("2d").drawImage(oVideo, 0, 0, oCanvas.width, oCanvas.height);
+	            console.log(oCanvas.toDataURL("image/png")); //第一帧图片url
+                var base64 = oCanvas.toDataURL("image/png");
+                var oImg = document.createElement("img");
+                var oImgWrap = document.getElementById('img-wrap');
+                oImg.setAttribute('src', base64);
+                oImgWrap.appendChild(oImg);
+
+            });
+        }
+
+        function showVideo(){
+	        // var oVideo = document.createElement('video');
+	        // oVideo.setAttribute('controls', 'controls');
+	        var oInBox = document.getElementById('in-box');
+	        oInBox.style.display = 'block';
+        }
+
+    </script>
+</body>
+</html>
